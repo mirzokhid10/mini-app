@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Проверка подписки</title>
+
+    <!-- MAX Bridge Library -->
+    <script src="https://st.max.ru/js/max-web-app.js"></script>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b8 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            background: white;
+            border-radius: 24px;
+            padding: 48px 32px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.4s ease-out;
+        }
+
+        <blade keyframes|%20slideUp%20%7B%0D>from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        }
+
+        .illustration {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 32px;
+            background: #f5e6d3;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .door {
+            width: 100px;
+            height: 140px;
+            background: #8B6F47;
+            border-radius: 8px;
+            position: relative;
+            border: 4px solid #6B4F27;
+        }
+
+        .door::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            width: 8px;
+            height: 8px;
+            background: #FFD700;
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+
+        .door-sign {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 8px;
+            font-weight: bold;
+            color: #6B4F27;
+            white-space: nowrap;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: -30px;
+            right: -10px;
+            font-size: 48px;
+            animation: pulse 2s infinite;
+        }
+
+        <blade keyframes|%20pulse%20%7B%0D>0%,
+        100% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+        }
+
+        h1 {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            line-height: 1.4;
+        }
+
+        p {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .cta-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #8B6F47;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+            transition: all 0.3s ease;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .gate {
+            display: none;
+        }
+
+        .gate.active {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 24px;
+        }
+
+        <blade keyframes|%20spin%20%7B%0D>0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .error {
+            display: none;
+            color: #d32f2f;
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        <blade media|%20(max-width%3A%20480px)%20%7B%0D>.container {
+            padding: 32px 24px;
+        }
+
+        h1 {
+            font-size: 19px;
+        }
+
+        p {
+            font-size: 14px;
+        }
+
+        .illustration {
+            width: 160px;
+            height: 160px;
+        }
+
+        .door {
+            width: 80px;
+            height: 120px;
+        }
+
+        .lock-icon {
+            font-size: 40px;
+        }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Loading State -->
+    <div class="loading active" id="loading">
+        <div class="container">
+            <div class="spinner"></div>
+            <p class="loading-text">⏳ Проверка подписки...</p>
+        </div>
+    </div>
+
+    <!-- Subscription Gate -->
+    <div class="gate" id="gate">
+        <div class="container">
+            <div class="illustration">
+                <div class="door">
+                    <div class="door-sign">ТОЛЬКО ДЛЯ<br>ПОДПИСЧИКОВ</div>
+                </div>
+                <div class="lock-icon">🔒</div>
+            </div>
+
+            <h1 id="gateTitle">Простите, но этот материал доступен только для подписчиков канала.</h1>
+
+            <p>Подпишитесь на канал и получите доступ ко всем эксклюзивным материалам</p>
+
+            <div class="cta-text">Подпишитесь на канал и попробуйте ещё раз</div>
+
+            <button class="btn" onclick="goToChannel()">📢 Перейти в канал</button>
+
+            <p class="error" id="error"></p>
+        </div>
+    </div>
+
+    <script>
+        // Configuration - UPDATE THESE VALUES
+        const API_URL = 'https://your-backend.com'; // Your backend URL
+        const CHANNEL_LINK = 'https://max.ru/egorpyrikov'; // Your channel link
+        const CHANNEL_NAME = 'Егор Пыриков'; // Your channel name
+
+        // Get WebApp data
+        let userId = null;
+        let postId = null;
+
+        // Initialize
+        function init() {
+            try {
+                // Ensure WebApp is loaded
+                if (typeof window.WebApp === 'undefined') {
+                    showError('Ошибка загрузки приложения');
+                    return;
+                }
+
+                // Get user data from MAX WebApp
+                const initData = window.WebApp.initDataUnsafe;
+
+                if (!initData || !initData.user) {
+                    showError('Не удалось получить данные пользователя');
+                    return;
+                }
+
+                userId = initData.user.id;
+
+                // Get post_id from start_param (format: "postid_abc123")
+                const startParam = initData.start_param;
+
+                if (!startParam) {
+                    showError('Неверная ссылка');
+                    return;
+                }
+
+                // Parse post_id from startParam
+                if (startParam.startsWith('postid_')) {
+                    postId = startParam.replace('postid_', '');
+                } else {
+                    postId = startParam;
+                }
+
+                console.log('User ID:', userId);
+                console.log('Post ID:', postId);
+
+                // Update gate title with channel name
+                document.getElementById('gateTitle').textContent =
+                    `Простите, но этот материал доступен только для подписчиков канала «${CHANNEL_NAME}».`;
+
+                // Start subscription check
+                checkSubscription();
+
+            } catch (error) {
+                console.error('Initialization error:', error);
+                showError('Ошибка инициализации');
+            }
+        }
+
+        // Check subscription via backend API
+        async function checkSubscription() {
+            try {
+                const response = await fetch(
+                    `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                    return;
+                }
+
+                if (data.is_subscribed && data.redirect_url) {
+                    // ✅ User IS subscribed - redirect to protected URL
+                    console.log('User is subscribed, redirecting to:', data.redirect_url);
+
+                    // Small delay to show loading state
+                    setTimeout(() => {
+                        window.location.href = data.redirect_url;
+                    }, 500);
+
+                } else {
+                    // ❌ User NOT subscribed - show gate
+                    console.log('User is not subscribed');
+                    showGate();
+                }
+
+            } catch (error) {
+                console.error('Error checking subscription:', error);
+                showError('Ошибка проверки подписки. Попробуйте позже.');
+            }
+        }
+
+        // Show subscription gate
+        function showGate() {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('gate').classList.add('active');
+        }
+
+        // Show error
+        function showError(message) {
+            document.getElementById('loading').classList.remove('active');
+            document.getElementById('gate').classList.add('active');
+            document.getElementById('error').textContent = message;
+            document.getElementById('error').classList.add('active');
+        }
+
+        // Navigate to channel
+        function goToChannel() {
+            try {
+                // Use MAX deep link to open channel
+                window.WebApp.openMaxLink(CHANNEL_LINK);
+
+                // Close mini-app after short delay
+                setTimeout(() => {
+                    window.WebApp.close();
+                }, 300);
+
+            } catch (error) {
+                console.error('Error opening channel:', error);
+                // Fallback: open in external browser
+                window.WebApp.openLink(CHANNEL_LINK);
+            }
+        }
+
+        // Start when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+
+</html>
