@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Проверка подписки</title>
-
-    <!-- MAX Bridge Library -->
     <script src="https://st.max.ru/js/max-web-app.js"></script>
 
     <style>
@@ -28,7 +26,6 @@
             overflow: hidden;
         }
 
-        /* ── Slide-up animation ── */
         <blade keyframes|%20slideUp%20%7B%0D>from {
             opacity: 0;
             transform: translateY(30px);
@@ -40,7 +37,6 @@
         }
         }
 
-        /* ── Pulse animation for lock icon ── */
         <blade keyframes|%20pulse%20%7B%0D>0%,
         100% {
             transform: scale(1);
@@ -51,13 +47,28 @@
         }
         }
 
-        /* ── Spinner ── */
         <blade keyframes|%20spin%20%7B%0D>0% {
             transform: rotate(0deg);
         }
 
         100% {
             transform: rotate(360deg);
+        }
+        }
+
+        <blade keyframes|%20checkPop%20%7B%0D>0% {
+            transform: scale(0);
+            opacity: 0;
+        }
+
+        60% {
+            transform: scale(1.2);
+            opacity: 1;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
         }
         }
 
@@ -72,7 +83,7 @@
             animation: slideUp 0.4s ease-out;
         }
 
-        /* ── Loading state ── */
+        /* LOADING */
         #loading {
             display: flex;
         }
@@ -93,15 +104,48 @@
             font-weight: 500;
         }
 
-        /* ── Gate state (hidden until needed) ── */
+        /* SUCCESS */
+        #success {
+            display: none;
+        }
+
+        .success-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 28px;
+            font-size: 44px;
+            animation: checkPop 0.5s ease-out;
+        }
+
+        #success h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        #success p {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        /* GATE */
         #gate {
             display: none;
         }
 
         .illustration {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 32px;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 28px;
             background: #f5e6d3;
             border-radius: 20px;
             display: flex;
@@ -111,20 +155,19 @@
         }
 
         .door {
-            width: 100px;
-            height: 140px;
+            width: 90px;
+            height: 130px;
             background: #8B6F47;
             border-radius: 8px;
             position: relative;
             border: 4px solid #6B4F27;
         }
 
-        /* door knob */
         .door::before {
             content: '';
             position: absolute;
             top: 50%;
-            right: 15px;
+            right: 14px;
             width: 8px;
             height: 8px;
             background: #FFD700;
@@ -138,9 +181,9 @@
             left: 50%;
             transform: translateX(-50%);
             background: white;
-            padding: 4px 8px;
+            padding: 4px 7px;
             border-radius: 4px;
-            font-size: 8px;
+            font-size: 7px;
             font-weight: bold;
             color: #6B4F27;
             white-space: nowrap;
@@ -148,92 +191,93 @@
 
         .lock-icon {
             position: absolute;
-            top: -30px;
-            right: -10px;
-            font-size: 48px;
+            top: -28px;
+            right: -8px;
+            font-size: 44px;
             animation: pulse 2s infinite;
         }
 
-        h1 {
-            font-size: 22px;
+        #gate h1 {
+            font-size: 20px;
             font-weight: 600;
             color: #1a1a1a;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
             line-height: 1.4;
         }
 
-        p {
-            font-size: 15px;
+        #gate p {
+            font-size: 14px;
             color: #666;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
             line-height: 1.6;
         }
 
         .cta-text {
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             color: #8B6F47;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
+        /* BUTTONS */
         .btn {
             display: inline-block;
-            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
-            color: white;
             padding: 16px 40px;
             border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 16px;
             border: none;
             cursor: pointer;
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-            transition: all 0.3s ease;
+            transition: transform 0.15s ease;
             width: 100%;
-            max-width: 280px;
+            max-width: 300px;
         }
 
         .btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+            transform: scale(0.97);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #43e97b, #38f9d7);
+            color: #1a1a1a;
+            box-shadow: 0 4px 15px rgba(67, 233, 123, 0.35);
+        }
+
+        .btn-channel {
+            background: linear-gradient(135deg, #4A90E2, #357ABD);
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
         }
 
         .error-msg {
             display: none;
             color: #d32f2f;
-            font-size: 14px;
+            font-size: 13px;
             margin-top: 16px;
-            padding: 10px;
+            padding: 10px 14px;
             background: #ffeaea;
             border-radius: 8px;
         }
 
         <blade media|%20(max-width%3A%20480px)%20%7B%0D>.container {
-            padding: 32px 24px;
+            padding: 32px 20px;
         }
 
-        h1 {
-            font-size: 19px;
-        }
-
-        p {
-            font-size: 14px;
+        #success h1,
+        #gate h1 {
+            font-size: 18px;
         }
 
         .illustration {
-            width: 160px;
-            height: 160px;
+            width: 150px;
+            height: 150px;
         }
 
         .door {
-            width: 80px;
-            height: 120px;
-        }
-
-        .lock-icon {
-            font-size: 40px;
+            width: 75px;
+            height: 110px;
         }
         }
     </style>
@@ -241,15 +285,28 @@
 
 <body>
 
-    <!-- ── LOADING STATE ── -->
+    <!-- LOADING -->
     <div id="loading">
         <div class="container">
             <div class="spinner"></div>
-            <p class="loading-text">⏳ Проверка подписки...</p>
+            <p class="loading-text">Проверка подписки...</p>
         </div>
     </div>
 
-    <!-- ── GATE STATE (shown only if not subscribed) ── -->
+    <!-- SUCCESS: user IS subscribed, must tap to open -->
+    <div id="success">
+        <div class="container">
+            <div class="success-icon">✅</div>
+            <h1>Подписка подтверждена!</h1>
+            <p>Нажмите кнопку ниже, чтобы открыть материал в браузере</p>
+            <button class="btn btn-primary" onclick="openContent()">
+                Открыть материал
+            </button>
+            <div class="error-msg" id="successErrorMsg"></div>
+        </div>
+    </div>
+
+    <!-- GATE: user is NOT subscribed -->
     <div id="gate">
         <div class="container">
             <div class="illustration">
@@ -258,74 +315,107 @@
                 </div>
                 <div class="lock-icon">🔒</div>
             </div>
-
             <h1 id="gateTitle">
                 Простите, но этот материал доступен только для подписчиков канала.
             </h1>
-
             <p>Подпишитесь на канал и получите доступ ко всем эксклюзивным материалам</p>
-
             <div class="cta-text">Подпишитесь на канал и попробуйте ещё раз</div>
-
-            <button class="btn" onclick="goToChannel()">📢 Перейти в канал</button>
-
-            <div class="error-msg" id="errorMsg"></div>
+            <button class="btn btn-channel" onclick="goToChannel()">
+                Перейти в канал
+            </button>
+            <div class="error-msg" id="gateErrorMsg"></div>
         </div>
     </div>
 
     <script>
-        // ════════════════════════════════════════════════════════
-        //  CONFIG  — only this block needs updating
-        // ════════════════════════════════════════════════════════
-        const API_URL = 'https://anchor-bunny-catherine-gmt.trycloudflare.com/';
-        const CHANNEL_LINK = 'https://max.ru/id501806959398_biz';
-        const CHANNEL_NAME = 'id501806959398_biz';
-        // ════════════════════════════════════════════════════════
+        // ════════════════════════════════════════
+        // CONFIG — update API_URL when tunnel URL changes
+        // ════════════════════════════════════════
+        const API_URL = 'https://western-directive-pale-productive.trycloudflare.com/';
+        const CHANNEL_LINK = 'https://max.ru/egorpyrikov';
+        const CHANNEL_NAME = 'Егор Пыриков';
+        // ════════════════════════════════════════
 
-        let userId = null;
-        let postId = null;
+        let redirectUrl = null;
 
-        // ── Helpers ──────────────────────────────────────────────
+        // ── Helpers ─────────────────────────────
 
-        function showGate(channelName) {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('gate').style.display = 'flex';
-            document.getElementById('gateTitle').textContent =
-                `Простите, но этот материал доступен только для подписчиков канала «${channelName}».`;
+        function showScreen(id) {
+            ['loading', 'success', 'gate'].forEach(s => {
+                document.getElementById(s).style.display = (s === id) ? 'flex' : 'none';
+            });
         }
 
         function showError(message) {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('gate').style.display = 'flex';
-            const el = document.getElementById('errorMsg');
+            showScreen('gate');
+            const el = document.getElementById('gateErrorMsg');
             el.textContent = message;
             el.style.display = 'block';
         }
 
-        // ── Go to channel button ──────────────────────────────────
+        // ── Button actions ───────────────────────
 
-        function goToChannel() {
+        // MAX Bridge requires a real user tap for openLink to work.
+        // We CANNOT call it automatically — so we show a button instead.
+        function openContent() {
+            if (!redirectUrl) return;
             try {
-                // Opens the channel INSIDE the MAX app
-                window.WebApp.openMaxLink(CHANNEL_LINK);
-                // Close mini-app after a short pause so user lands in channel
-                setTimeout(() => window.WebApp.close(), 400);
+                // Opens URL in device's default browser (outside MAX)
+                window.WebApp.openLink(redirectUrl);
+                setTimeout(() => window.WebApp.close(), 300);
             } catch (err) {
-                console.error('openMaxLink failed, falling back:', err);
-                window.open(CHANNEL_LINK, '_blank');
+                console.error('openLink error:', err);
+                const el = document.getElementById('successErrorMsg');
+                el.textContent = 'Не удалось открыть браузер. Попробуйте ещё раз.';
+                el.style.display = 'block';
             }
         }
 
-        // ── Subscription check ────────────────────────────────────
-
-        async function checkSubscription() {
+        function goToChannel() {
             try {
-                const url = `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`;
-                const response = await fetch(url);
+                // Opens the channel inside MAX app
+                window.WebApp.openMaxLink(CHANNEL_LINK);
+                setTimeout(() => window.WebApp.close(), 400);
+            } catch (err) {
+                console.error('openMaxLink error:', err);
+                window.WebApp.openLink(CHANNEL_LINK);
+            }
+        }
 
-                if (!response.ok) {
-                    throw new Error(`Server returned HTTP ${response.status}`);
+        // ── Subscription check ───────────────────
+
+        async function init() {
+            try {
+                if (typeof window.WebApp === 'undefined') {
+                    showError('Откройте приложение через MAX');
+                    return;
                 }
+
+                const initData = window.WebApp.initDataUnsafe;
+                if (!initData || !initData.user) {
+                    showError('Откройте приложение через MAX');
+                    return;
+                }
+
+                const userId = initData.user.id;
+                const startParam = initData.start_param || '';
+
+                if (!startParam) {
+                    showError('Неверная ссылка: параметр поста не найден');
+                    return;
+                }
+
+                const postId = startParam.startsWith('postid_') ?
+                    startParam.replace('postid_', '') :
+                    startParam;
+
+                console.log('userId:', userId, 'postId:', postId);
+
+                const response = await fetch(
+                    `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`
+                );
+
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
                 const data = await response.json();
 
@@ -334,72 +424,24 @@
                     return;
                 }
 
+                const channelName = data.channel_name || CHANNEL_NAME;
+                document.getElementById('gateTitle').textContent =
+                    `Простите, но этот материал доступен только для подписчиков канала «${channelName}».`;
+
                 if (data.is_subscribed && data.redirect_url) {
-                    // ✅ Subscribed — redirect to protected content
-                    console.log('✅ Subscribed, redirecting to:', data.redirect_url);
-                    // Small delay so user sees the loading state briefly
-                    setTimeout(() => {
-                        // Open in external browser
-                        window.WebApp.openLink(data.redirect_url);
-                        // Close the mini app after opening the link
-                        setTimeout(() => window.WebApp.close(), 500);
-                    }, 300);
+                    // Save URL — opened only when user taps the button
+                    redirectUrl = data.redirect_url;
+                    showScreen('success');
                 } else {
-                    // ❌ Not subscribed — show gate
-                    console.log('❌ Not subscribed');
-                    const name = data.channel_name || CHANNEL_NAME;
-                    showGate(name);
+                    showScreen('gate');
                 }
 
             } catch (err) {
-                console.error('checkSubscription error:', err);
+                console.error('init error:', err);
                 showError('Не удалось проверить подписку. Попробуйте позже.');
             }
         }
 
-        // ── Initialise ────────────────────────────────────────────
-
-        function init() {
-            try {
-                // MAX Bridge must be loaded
-                if (typeof window.WebApp === 'undefined') {
-                    showError('Ошибка: библиотека MAX не загружена. Откройте через MAX.');
-                    return;
-                }
-
-                const initData = window.WebApp.initDataUnsafe;
-
-                // During local dev / browser testing initData may be empty.
-                // In that case show a clear message instead of a silent failure.
-                if (!initData || !initData.user) {
-                    showError('Откройте это приложение через MAX.');
-                    return;
-                }
-
-                userId = initData.user.id;
-
-                // start_param format from nwbot.py: "postid_<hex>"
-                const startParam = initData.start_param || '';
-                if (!startParam) {
-                    showError('Неверная ссылка: отсутствует параметр поста.');
-                    return;
-                }
-
-                postId = startParam.startsWith('postid_') ?
-                    startParam.replace('postid_', '') :
-                    startParam;
-
-                console.log('userId:', userId, '| postId:', postId);
-
-                checkSubscription();
-
-            } catch (err) {
-                console.error('init error:', err);
-                showError('Ошибка инициализации приложения.');
-            }
-        }
-
-        // Run after DOM is ready
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
