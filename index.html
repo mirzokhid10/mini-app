@@ -277,7 +277,7 @@
         // ════════════════════════════════════════════════════════
         //  CONFIG  — only this block needs updating
         // ════════════════════════════════════════════════════════
-        const API_URL = 'https://basics-instead-judgment-grades.trycloudflare.com/';
+        const API_URL = 'https://anchor-bunny-catherine-gmt.trycloudflare.com/';
         const CHANNEL_LINK = 'https://max.ru/id501806959398_biz';
         const CHANNEL_NAME = 'id501806959398_biz';
         // ════════════════════════════════════════════════════════
@@ -339,7 +339,10 @@
                     console.log('✅ Subscribed, redirecting to:', data.redirect_url);
                     // Small delay so user sees the loading state briefly
                     setTimeout(() => {
-                        window.location.href = data.redirect_url;
+                        // Open in external browser
+                        window.WebApp.openLink(data.redirect_url);
+                        // Close the mini app after opening the link
+                        setTimeout(() => window.WebApp.close(), 500);
                     }, 300);
                 } else {
                     // ❌ Not subscribed — show gate
