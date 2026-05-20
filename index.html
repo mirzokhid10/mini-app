@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Проверка подписки</title>
 
-    <script src="https://platform-api.max.ru/webapp/v1/max-webapp.js"></script>
 
+    <script src="https://st.max.ru/js/max-web-app.js"></script>
     <script src="https://st.max.ru/js/max-web-app.js"></script>
 
     <style>
@@ -324,7 +324,7 @@
                 <div class="lock-icon">🔒</div>
             </div>
             <h1 id="gateTitle">
-                Простите, но этот материал доступен только для подписчиков канала.
+                Проститееееее, но этот материал доступен только для подписчиков канала.
             </h1>
             <p>
                 Подпишитесь на канал и получите доступ ко всем эксклюзивным материалам
@@ -338,17 +338,11 @@
     </div>
 
     <script>
-        // ════════════════════════════════════════
-        // CONFIG
-        // ════════════════════════════════════════
         const API_URL = 'https://buckwheat-reshape-sporty.ngrok-free.dev';
         const CHANNEL_LINK = 'https://max.ru/id501806959398_biz';
         const CHANNEL_NAME = 'ЮЛИЯ КЕРЕЦМАН';
-        // ════════════════════════════════════════
 
         let redirectUrl = null;
-
-        // ── Helpers ─────────────────────────────
 
         function showScreen(id) {
             ['loading', 'success', 'gate'].forEach(s => {
@@ -363,42 +357,28 @@
             el.style.display = 'block';
         }
 
-        // ── Button actions ───────────────────────
-
         function openContent() {
             if (!redirectUrl) return;
-
-            console.log('Opening URL:', redirectUrl);
-
             try {
                 if (window.WebApp && window.WebApp.openLink) {
                     window.WebApp.openLink(redirectUrl);
                     setTimeout(() => {
-                        if (window.WebApp.close) {
-                            window.WebApp.close();
-                        }
+                        if (window.WebApp.close) window.WebApp.close();
                     }, 300);
                 } else {
-                    // Fallback to regular window.open
                     window.open(redirectUrl, '_blank');
                 }
             } catch (err) {
-                console.error('openLink error:', err);
-                // Last resort fallback
                 window.location.href = redirectUrl;
             }
         }
 
         function goToChannel() {
-            console.log('Going to channel:', CHANNEL_LINK);
-
             try {
                 if (window.WebApp && window.WebApp.openMaxLink) {
                     window.WebApp.openMaxLink(CHANNEL_LINK);
                     setTimeout(() => {
-                        if (window.WebApp.close) {
-                            window.WebApp.close();
-                        }
+                        if (window.WebApp.close) window.WebApp.close();
                     }, 400);
                 } else if (window.WebApp && window.WebApp.openLink) {
                     window.WebApp.openLink(CHANNEL_LINK);
@@ -406,132 +386,90 @@
                     window.open(CHANNEL_LINK, '_blank');
                 }
             } catch (err) {
-                console.error('goToChannel error:', err);
                 window.location.href = CHANNEL_LINK;
             }
         }
 
-        // ── Subscription check ───────────────────
+        async function checkSubscription(userId, postId) {
+            try {
+                const apiEndpoint = `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`;
+                console.log('Calling API:', apiEndpoint);
+
+                const response = await fetch(apiEndpoint);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+                const data = await response.json();
+                console.log('API Response:', data);
+
+                if (data.error) {
+                    showError('Ошибка: ' + data.error);
+                    return;
+                }
+
+                const channelName = data.channel_name || CHANNEL_NAME;
+                document.getElementById('gateTitle').textContent =
+                    `Простите, но этот материал доступен только для подписчиков канала «${channelName}».`;
+
+                if (data.is_subscribed && data.redirect_url) {
+                    redirectUrl = data.redirect_url;
+                    showScreen('success');
+                } else {
+                    showScreen('gate');
+                }
+            } catch (err) {
+                console.error('checkSubscription error:', err);
+                showError('Не удалось проверить подписку. Попробуйте позже.');
+            }
+        }
 
         async function init() {
+            try {
+                // DEBUG ALERTS - remove after testing
                 alert('SDK loaded: ' + (typeof window.WebApp !== 'undefined'));
                 alert('initData: ' + JSON.stringify(window.WebApp ? .initDataUnsafe));
-                alert('all keys: ' + JSON.stringify(Object.keys(window.WebApp || {})));
-                try {
-                    if (typeof window.WebApp === 'undefined') {
-                        showError('Откройте приложение через MAX');
-                        return;
-                    }
-                    const initData = window.WebApp.initDataUnsafe;
-                    alert('initData: ' + JSON.stringify(initData));
-                    console.log('=== INIT START ===');
-                    console.log('window.WebApp exists:', typeof window.WebApp !== 'undefined');
-                    console.log('window object keys:', Object.keys(window).filter(k => k.toLowerCase().includes(
-                            'web') || k
-                        .toLowerCase().includes('max')));
+                alert('WebApp keys: ' + JSON.stringify(Object.keys(window.WebApp || {})));
 
-                    try {
-                        // Check if MAX SDK is loaded
-                        if (typeof window.WebApp === 'undefined') {
-                            console.error('WebApp SDK not loaded');
-
-                            // TEMPORARY DEBUG MODE - remove after testing
-                            // This allows you to test with hardcoded values
-                            const debugMode = false; // Set to false in production
-
-                            if (debugMode && window.location.hostname === 'localhost') {
-                                console.warn('DEBUG MODE: Using hardcoded values');
-                                const userId = 292791491; // Your user ID
-                                const postId = '82f78cdea43b'; // Your test post ID
-                                await checkSubscription(userId, postId);
-                                return;
-                            }
-
-                            showError('Откройте приложение через MAX');
-                            return;
-                        }
-
-                        console.log('WebApp object:', window.WebApp);
-
-                        const initData = window.WebApp.initDataUnsafe;
-                        console.log('initDataUnsafe:', initData);
-
-                        if (!initData || !initData.user) {
-                            showError('Не удалось получить данные пользователя');
-                            return;
-                        }
-
-                        const userId = initData.user.id;
-                        const startParam = initData.start_param || '';
-
-                        console.log('userId:', userId);
-                        console.log('start_param:', startParam);
-
-                        if (!startParam) {
-                            showError('Неверная ссылка: параметр поста не найден');
-                            return;
-                        }
-
-                        const postId = startParam.startsWith('postid_') ?
-                            startParam.replace('postid_', '') :
-                            startParam;
-
-                        console.log('Extracted postId:', postId);
-
-                        await checkSubscription(userId, postId);
-
-                    } catch (err) {
-                        console.error('init error:', err);
-                        showError('Ошибка инициализации: ' + err.message);
-                    }
+                if (typeof window.WebApp === 'undefined') {
+                    showError('Откройте приложение через MAX');
+                    return;
                 }
 
-                async function checkSubscription(userId, postId) {
-                    try {
+                const initData = window.WebApp.initDataUnsafe;
+                console.log('initDataUnsafe:', JSON.stringify(initData));
 
-                        const apiEndpoint = `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`;
-                        console.log('Calling API:', apiEndpoint);
-
-                        const response = await fetch(apiEndpoint);
-                        console.log('Response status:', response.status);
-
-                        if (!response.ok) {
-                            throw new Error(`HTTP ${response.status}`);
-                        }
-
-                        const data = await response.json();
-                        console.log('API Response:', data);
-
-                        if (data.error) {
-                            showError('Ошибка: ' + data.error);
-                            return;
-                        }
-
-                        const channelName = data.channel_name || CHANNEL_NAME;
-                        document.getElementById('gateTitle').textContent =
-                            `Простите, но этот материал доступен только для подписчиков канала «${channelName}».`;
-
-                        if (data.is_subscribed && data.redirect_url) {
-                            console.log('User is subscribed, redirect URL:', data.redirect_url);
-                            redirectUrl = data.redirect_url;
-                            showScreen('success');
-                        } else {
-                            console.log('User is NOT subscribed');
-                            showScreen('gate');
-                        }
-
-                    } catch (err) {
-                        console.error('checkSubscription error:', err);
-                        showError('Не удалось проверить подписку. Попробуйте позже.');
-                    }
+                if (!initData || !initData.user) {
+                    showError('Не удалось получить данные пользователя');
+                    return;
                 }
 
-                // Initialize when DOM is ready
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', init);
-                } else {
-                    init();
+                const userId = initData.user.id;
+                const startParam = initData.start_param || '';
+
+                console.log('userId:', userId);
+                console.log('startParam:', startParam);
+
+                if (!startParam) {
+                    showError('Неверная ссылка: параметр поста не найден');
+                    return;
                 }
+
+                const postId = startParam.startsWith('postid_') ?
+                    startParam.replace('postid_', '') :
+                    startParam;
+
+                await checkSubscription(userId, postId);
+
+            } catch (err) {
+                console.error('init error:', err);
+                showError('Ошибка инициализации: ' + err.message);
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 
