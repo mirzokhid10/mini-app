@@ -414,6 +414,9 @@
         // ── Subscription check ───────────────────
 
         async function init() {
+                alert('SDK loaded: ' + (typeof window.WebApp !== 'undefined'));
+                alert('initData: ' + JSON.stringify(window.WebApp ? .initDataUnsafe));
+                alert('all keys: ' + JSON.stringify(Object.keys(window.WebApp || {})));
                 try {
                     if (typeof window.WebApp === 'undefined') {
                         showError('Откройте приложение через MAX');
