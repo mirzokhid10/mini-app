@@ -424,18 +424,12 @@
 
         async function init() {
             try {
-                // DEBUG ALERTS - remove after testing
-                alert('SDK loaded: ' + (typeof window.WebApp !== 'undefined'));
-                alert('initData: ' + JSON.stringify(window.WebApp ? .initDataUnsafe));
-                alert('WebApp keys: ' + JSON.stringify(Object.keys(window.WebApp || {})));
-
                 if (typeof window.WebApp === 'undefined') {
                     showError('Откройте приложение через MAX');
                     return;
                 }
 
                 const initData = window.WebApp.initDataUnsafe;
-                console.log('initDataUnsafe:', JSON.stringify(initData));
 
                 if (!initData || !initData.user) {
                     showError('Не удалось получить данные пользователя');
@@ -444,9 +438,6 @@
 
                 const userId = initData.user.id;
                 const startParam = initData.start_param || '';
-
-                console.log('userId:', userId);
-                console.log('startParam:', startParam);
 
                 if (!startParam) {
                     showError('Неверная ссылка: параметр поста не найден');
