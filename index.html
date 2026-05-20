@@ -395,11 +395,21 @@
                 const apiEndpoint = `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`;
                 console.log('Calling API:', apiEndpoint);
 
+                // ADD THIS DEBUG ALERT
+                alert(`Calling API: ${apiEndpoint}`);
+
                 const response = await fetch(apiEndpoint);
+
+                // ADD THIS DEBUG ALERT
+                alert(`Response status: ${response.status}`);
+
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
                 const data = await response.json();
                 console.log('API Response:', data);
+
+                // ADD THIS DEBUG ALERT
+                alert(`API Response: subscribed=${data.is_subscribed}, url=${data.redirect_url}`);
 
                 if (data.error) {
                     showError('Ошибка: ' + data.error);
@@ -418,12 +428,16 @@
                 }
             } catch (err) {
                 console.error('checkSubscription error:', err);
+                alert(`Error: ${err.message}`); // ADD THIS
                 showError('Не удалось проверить подписку. Попробуйте позже.');
             }
         }
 
         async function init() {
             try {
+                redirectUrl = "https://disk.yandex.ru/i/1cS-6DUH_eTu0w";
+                showScreen('success');
+                return;
                 if (typeof window.WebApp === 'undefined') {
                     showError('Откройте приложение через MAX');
                     return;
