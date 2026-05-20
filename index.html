@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Проверка подписки</title>
 
     <script src="https://platform-api.max.ru/webapp/v1/max-webapp.js"></script>
@@ -293,7 +293,6 @@
 </head>
 
 <body>
-
     <!-- LOADING -->
     <div id="loading">
         <div class="container">
@@ -307,7 +306,7 @@
         <div class="container">
             <div class="success-icon">✅</div>
             <h1>Подписка подтверждена!</h1>
-            <p>Нажмите кнопку ниже, чтобы открыть материал в браузере</p>
+            <p>Нажмитееее кнопку ниже, чтобы открыть материал в браузере</p>
             <button class="btn btn-primary" onclick="openContent()">
                 Открыть материал
             </button>
@@ -320,14 +319,16 @@
         <div class="container">
             <div class="illustration">
                 <div class="door">
-                    <div class="door-sign">ТОЛЬКО ДЛЯ<br>ПОДПИСЧИКОВ</div>
+                    <div class="door-sign">ТОЛЬКО ДЛЯ<br />ПОДПИСЧИКОВ</div>
                 </div>
                 <div class="lock-icon">🔒</div>
             </div>
             <h1 id="gateTitle">
                 Простите, но этот материал доступен только для подписчиков канала.
             </h1>
-            <p>Подпишитесь на канал и получите доступ ко всем эксклюзивным материалам</p>
+            <p>
+                Подпишитесь на канал и получите доступ ко всем эксклюзивным материалам
+            </p>
             <div class="cta-text">Подпишитесь на канал и попробуйте ещё раз</div>
             <button class="btn btn-channel" onclick="goToChannel()">
                 Перейти в канал
@@ -340,7 +341,7 @@
         // ════════════════════════════════════════
         // CONFIG
         // ════════════════════════════════════════
-        const API_URL = 'https://buckwheat-reshape-sporty.ngrok-free.dev/';
+        const API_URL = 'https://buckwheat-reshape-sporty.ngrok-free.dev';
         const CHANNEL_LINK = 'https://max.ru/id501806959398_biz';
         const CHANNEL_NAME = 'ЮЛИЯ КЕРЕЦМАН';
         // ════════════════════════════════════════
@@ -413,114 +414,122 @@
         // ── Subscription check ───────────────────
 
         async function init() {
-            console.log('=== INIT START ===');
-            console.log('window.WebApp exists:', typeof window.WebApp !== 'undefined');
-            console.log('window object keys:', Object.keys(window).filter(k => k.toLowerCase().includes('web') || k
-                .toLowerCase().includes('max')));
-
-            try {
-                // Check if MAX SDK is loaded
-                if (typeof window.WebApp === 'undefined') {
-                    console.error('WebApp SDK not loaded');
-
-                    // TEMPORARY DEBUG MODE - remove after testing
-                    // This allows you to test with hardcoded values
-                    const debugMode = false; // Set to false in production
-
-                    if (debugMode && window.location.hostname === 'localhost') {
-                        console.warn('DEBUG MODE: Using hardcoded values');
-                        const userId = 292791491; // Your user ID
-                        const postId = '82f78cdea43b'; // Your test post ID
-                        await checkSubscription(userId, postId);
+                try {
+                    if (typeof window.WebApp === 'undefined') {
+                        showError('Откройте приложение через MAX');
                         return;
                     }
+                    const initData = window.WebApp.initDataUnsafe;
+                    alert('initData: ' + JSON.stringify(initData));
+                    console.log('=== INIT START ===');
+                    console.log('window.WebApp exists:', typeof window.WebApp !== 'undefined');
+                    console.log('window object keys:', Object.keys(window).filter(k => k.toLowerCase().includes(
+                            'web') || k
+                        .toLowerCase().includes('max')));
 
-                    showError('Откройте приложение через MAX');
-                    return;
+                    try {
+                        // Check if MAX SDK is loaded
+                        if (typeof window.WebApp === 'undefined') {
+                            console.error('WebApp SDK not loaded');
+
+                            // TEMPORARY DEBUG MODE - remove after testing
+                            // This allows you to test with hardcoded values
+                            const debugMode = false; // Set to false in production
+
+                            if (debugMode && window.location.hostname === 'localhost') {
+                                console.warn('DEBUG MODE: Using hardcoded values');
+                                const userId = 292791491; // Your user ID
+                                const postId = '82f78cdea43b'; // Your test post ID
+                                await checkSubscription(userId, postId);
+                                return;
+                            }
+
+                            showError('Откройте приложение через MAX');
+                            return;
+                        }
+
+                        console.log('WebApp object:', window.WebApp);
+
+                        const initData = window.WebApp.initDataUnsafe;
+                        console.log('initDataUnsafe:', initData);
+
+                        if (!initData || !initData.user) {
+                            showError('Не удалось получить данные пользователя');
+                            return;
+                        }
+
+                        const userId = initData.user.id;
+                        const startParam = initData.start_param || '';
+
+                        console.log('userId:', userId);
+                        console.log('start_param:', startParam);
+
+                        if (!startParam) {
+                            showError('Неверная ссылка: параметр поста не найден');
+                            return;
+                        }
+
+                        const postId = startParam.startsWith('postid_') ?
+                            startParam.replace('postid_', '') :
+                            startParam;
+
+                        console.log('Extracted postId:', postId);
+
+                        await checkSubscription(userId, postId);
+
+                    } catch (err) {
+                        console.error('init error:', err);
+                        showError('Ошибка инициализации: ' + err.message);
+                    }
                 }
 
-                console.log('WebApp object:', window.WebApp);
+                async function checkSubscription(userId, postId) {
+                    try {
 
-                const initData = window.WebApp.initDataUnsafe;
-                console.log('initDataUnsafe:', initData);
+                        const apiEndpoint = `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`;
+                        console.log('Calling API:', apiEndpoint);
 
-                if (!initData || !initData.user) {
-                    showError('Не удалось получить данные пользователя');
-                    return;
+                        const response = await fetch(apiEndpoint);
+                        console.log('Response status:', response.status);
+
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}`);
+                        }
+
+                        const data = await response.json();
+                        console.log('API Response:', data);
+
+                        if (data.error) {
+                            showError('Ошибка: ' + data.error);
+                            return;
+                        }
+
+                        const channelName = data.channel_name || CHANNEL_NAME;
+                        document.getElementById('gateTitle').textContent =
+                            `Простите, но этот материал доступен только для подписчиков канала «${channelName}».`;
+
+                        if (data.is_subscribed && data.redirect_url) {
+                            console.log('User is subscribed, redirect URL:', data.redirect_url);
+                            redirectUrl = data.redirect_url;
+                            showScreen('success');
+                        } else {
+                            console.log('User is NOT subscribed');
+                            showScreen('gate');
+                        }
+
+                    } catch (err) {
+                        console.error('checkSubscription error:', err);
+                        showError('Не удалось проверить подписку. Попробуйте позже.');
+                    }
                 }
 
-                const userId = initData.user.id;
-                const startParam = initData.start_param || '';
-
-                console.log('userId:', userId);
-                console.log('start_param:', startParam);
-
-                if (!startParam) {
-                    showError('Неверная ссылка: параметр поста не найден');
-                    return;
-                }
-
-                const postId = startParam.startsWith('postid_') ?
-                    startParam.replace('postid_', '') :
-                    startParam;
-
-                console.log('Extracted postId:', postId);
-
-                await checkSubscription(userId, postId);
-
-            } catch (err) {
-                console.error('init error:', err);
-                showError('Ошибка инициализации: ' + err.message);
-            }
-        }
-
-        async function checkSubscription(userId, postId) {
-            try {
-                const apiEndpoint = `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`;
-                console.log('Calling API:', apiEndpoint);
-
-                const response = await fetch(apiEndpoint);
-                console.log('Response status:', response.status);
-
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
-                }
-
-                const data = await response.json();
-                console.log('API Response:', data);
-
-                if (data.error) {
-                    showError('Ошибка: ' + data.error);
-                    return;
-                }
-
-                const channelName = data.channel_name || CHANNEL_NAME;
-                document.getElementById('gateTitle').textContent =
-                    `Проститееееееее, но этот материал доступен только для подписчиков канала «${channelName}».`;
-
-                if (data.is_subscribed && data.redirect_url) {
-                    console.log('User is subscribed, redirect URL:', data.redirect_url);
-                    redirectUrl = data.redirect_url;
-                    showScreen('success');
+                // Initialize when DOM is ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', init);
                 } else {
-                    console.log('User is NOT subscribed');
-                    showScreen('gate');
+                    init();
                 }
-
-            } catch (err) {
-                console.error('checkSubscription error:', err);
-                showError('Не удалось проверить подписку. Попробуйте позже.');
-            }
-        }
-
-        // Initialize when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', init);
-        } else {
-            init();
-        }
     </script>
-
 </body>
 
 </html>
