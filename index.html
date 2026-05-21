@@ -5,10 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Проверка подписки</title>
-
-
     <script src="https://st.max.ru/js/max-web-app.js"></script>
-
 
     <style>
         * {
@@ -297,7 +294,7 @@
     <div id="loading">
         <div class="container">
             <div class="spinner"></div>
-            <p class="loading-text">Проверкаa подписки...</p>
+            <p class="loading-text">Проверка подписки...</p>
         </div>
     </div>
 
@@ -306,7 +303,7 @@
         <div class="container">
             <div class="success-icon">✅</div>
             <h1>Подписка подтверждена!</h1>
-            <p>Нажмитееее кнопку ниже, чтобы открыть материал в браузере</p>
+            <p>Нажмите кнопку ниже, чтобы открыть материал в браузере</p>
             <button class="btn btn-primary" onclick="openContent()">
                 Открыть материал
             </button>
@@ -324,7 +321,7 @@
                 <div class="lock-icon">🔒</div>
             </div>
             <h1 id="gateTitle">
-                Проститееееее, но этот материал доступен только для подписчиков канала.
+                Простите, но этот материал доступен только для подписчиков канала.
             </h1>
             <p>
                 Подпишитесь на канал и получите доступ ко всем эксклюзивным материалам
@@ -338,9 +335,13 @@
     </div>
 
     <script>
+        // ════════════════════════════════════════
+        // CONFIG — update API_URL to your backend
+        // ════════════════════════════════════════
         const API_URL = 'https://actinometric-jacinto-nontautologically.ngrok-free.dev';
         const CHANNEL_LINK = 'https://max.ru/id501806959398_biz';
         const CHANNEL_NAME = 'ЮЛИЯ КЕРЕЦМАН';
+        // ════════════════════════════════════════
 
         let redirectUrl = null;
 
@@ -369,6 +370,7 @@
                     window.open(redirectUrl, '_blank');
                 }
             } catch (err) {
+                console.error('openLink error:', err);
                 window.location.href = redirectUrl;
             }
         }
@@ -386,6 +388,7 @@
                     window.open(CHANNEL_LINK, '_blank');
                 }
             } catch (err) {
+                console.error('openMaxLink error:', err);
                 window.location.href = CHANNEL_LINK;
             }
         }
@@ -395,21 +398,13 @@
                 const apiEndpoint = `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`;
                 console.log('Calling API:', apiEndpoint);
 
-                // ADD THIS DEBUG ALERT
-                alert(`Calling API: ${apiEndpoint}`);
-
                 const response = await fetch(apiEndpoint);
-
-                // ADD THIS DEBUG ALERT
-                alert(`Response status: ${response.status}`);
+                console.log('Response status:', response.status);
 
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
                 const data = await response.json();
                 console.log('API Response:', data);
-
-                // ADD THIS DEBUG ALERT
-                alert(`API Response: subscribed=${data.is_subscribed}, url=${data.redirect_url}`);
 
                 if (data.error) {
                     showError('Ошибка: ' + data.error);
@@ -428,16 +423,12 @@
                 }
             } catch (err) {
                 console.error('checkSubscription error:', err);
-                alert(`Error: ${err.message}`); // ADD THIS
                 showError('Не удалось проверить подписку. Попробуйте позже.');
             }
         }
 
         async function init() {
             try {
-                redirectUrl = "https://disk.yandex.ru/i/1cS-6DUH_eTu0w";
-                showScreen('success');
-                return;
                 if (typeof window.WebApp === 'undefined') {
                     showError('Откройте приложение через MAX');
                     return;
@@ -453,6 +444,9 @@
                 const userId = initData.user.id;
                 const startParam = initData.start_param || '';
 
+                console.log('User ID:', userId);
+                console.log('Start param:', startParam);
+
                 if (!startParam) {
                     showError('Неверная ссылка: параметр поста не найден');
                     return;
@@ -461,6 +455,8 @@
                 const postId = startParam.startsWith('postid_') ?
                     startParam.replace('postid_', '') :
                     startParam;
+
+                console.log('Post ID:', postId);
 
                 await checkSubscription(userId, postId);
 
