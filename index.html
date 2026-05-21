@@ -394,31 +394,9 @@
             }
         }
 
-        function showDebugInfo({
-            userId,
-            startParam,
-            postId,
-            apiEndpoint,
-            status = 'not called yet',
-            response = ''
-        }) {
-            const existing = document.getElementById('debugInfo');
-            if (existing) existing.remove();
 
-            document.body.insertAdjacentHTML(
-                'beforeend',
-                `<pre id="debugInfo" style="position:fixed;left:8px;right:8px;bottom:8px;z-index:9999;max-height:42vh;overflow:auto;white-space:pre-wrap;font-size:12px;background:#eee;color:#111;padding:12px;margin:0;border-radius:8px;text-align:left;">
-user_id: ${userId || ''}
-start_param: ${startParam || ''}
-post_id: ${postId || ''}
-api: ${apiEndpoint || ''}
-status: ${status}
-response: ${response}
-</pre>`
-            );
-        }
 
-        async function checkSubscription(apiEndpoint, debugContext) {
+        async function checkSubscription(apiEndpoint) {
             try {
                 console.log('Calling API:', apiEndpoint);
 
@@ -432,22 +410,14 @@ response: ${response}
                 console.log('Response status:', response.status);
 
                 const rawText = await response.text();
-                showDebugInfo({
-                    ...debugContext,
-                    status: `HTTP ${response.status}`,
-                    response: rawText.slice(0, 600)
-                });
+
 
                 if (!response.ok) throw new Error(`HTTP ${response.status}: ${rawText.slice(0, 120)}`);
 
                 const data = JSON.parse(rawText);
                 console.log('API Response:', data);
 
-                showDebugInfo({
-                    ...debugContext,
-                    status: `HTTP ${response.status}, is_subscribed=${String(data.is_subscribed)}`,
-                    response: JSON.stringify(data)
-                });
+
 
                 if (data.error) {
                     showError('Ошибка: ' + data.error);
@@ -502,15 +472,9 @@ response: ${response}
                 console.log('Post ID:', postId);
 
                 const apiEndpoint = `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`;
-                const debugContext = {
-                    userId,
-                    startParam,
-                    postId,
-                    apiEndpoint
-                };
-                showDebugInfo(debugContext);
 
-                await checkSubscription(apiEndpoint, debugContext);
+
+                await checkSubscription(apiEndpoint);
 
             } catch (err) {
                 console.error('init error:', err);
