@@ -333,16 +333,6 @@
             <div class="error-msg" id="gateErrorMsg"></div>
         </div>
     </div>
-    <script>
-        document.body.insertAdjacentHTML(
-            'beforeend',
-            `<pre style="white-space:pre-wrap;font-size:12px;background:#eee;padding:12px;margin-top:20px;">
-                user_id: ${initData?.user?.id}
-                start_param: ${initData?.start_param}
-                api: ${apiEndpoint}
-                </pre>`
-        );
-    </script>
 
     <script>
         // ════════════════════════════════════════
@@ -403,9 +393,28 @@
             }
         }
 
-        async function checkSubscription(userId, postId) {
+        function showDebugInfo({
+            userId,
+            startParam,
+            postId,
+            apiEndpoint
+        }) {
+            const existing = document.getElementById('debugInfo');
+            if (existing) existing.remove();
+
+            document.body.insertAdjacentHTML(
+                'beforeend',
+                `<pre id="debugInfo" style="white-space:pre-wrap;font-size:12px;background:#eee;color:#111;padding:12px;margin:20px;border-radius:8px;text-align:left;">
+user_id: ${userId || ''}
+start_param: ${startParam || ''}
+post_id: ${postId || ''}
+api: ${apiEndpoint || ''}
+</pre>`
+            );
+        }
+
+        async function checkSubscription(apiEndpoint) {
             try {
-                const apiEndpoint = `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`;
                 console.log('Calling API:', apiEndpoint);
 
                 const response = await fetch(apiEndpoint);
@@ -433,7 +442,7 @@
                 }
             } catch (err) {
                 console.error('checkSubscription error:', err);
-                showError('Не удалось проверить подписку. Попробуйте позже.', err);
+                showError('Не удалось проверить подписку. Попробуйте позже.');
             }
         }
 
@@ -468,7 +477,15 @@
 
                 console.log('Post ID:', postId);
 
-                await checkSubscription(userId, postId);
+                const apiEndpoint = `${API_URL}/api/check-sub?user_id=${userId}&post_id=${postId}`;
+                showDebugInfo({
+                    userId,
+                    startParam,
+                    postId,
+                    apiEndpoint
+                });
+
+                await checkSubscription(apiEndpoint);
 
             } catch (err) {
                 console.error('init error:', err);
@@ -482,7 +499,6 @@
             init();
         }
     </script>
-
 </body>
 
 </html>
