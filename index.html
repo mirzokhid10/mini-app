@@ -333,6 +333,16 @@
             <div class="error-msg" id="gateErrorMsg"></div>
         </div>
     </div>
+    <script>
+        document.body.insertAdjacentHTML(
+            'beforeend',
+            `<pre style="white-space:pre-wrap;font-size:12px;background:#eee;padding:12px;margin-top:20px;">
+                user_id: ${initData?.user?.id}
+                start_param: ${initData?.start_param}
+                api: ${apiEndpoint}
+                </pre>`
+        );
+    </script>
 
     <script>
         // ════════════════════════════════════════
@@ -472,6 +482,7 @@
             init();
         }
     </script>
+
 </body>
 
 </html>
